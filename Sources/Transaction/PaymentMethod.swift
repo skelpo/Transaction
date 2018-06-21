@@ -2,7 +2,7 @@ import Vapor
 
 /// A generic representation of a payment service, such as
 /// PayPal, Stripe, or CoinBase.
-protocol PaymentMethod {
+public protocol PaymentMethod {
     
     /// The type of object that the payment service will be used to purchase.
     associatedtype Purchase: Buyable
