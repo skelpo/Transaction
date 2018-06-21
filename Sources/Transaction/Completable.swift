@@ -4,6 +4,10 @@
 ///        case paid
 ///        case enRoute
 ///
+///        static func completed() -> PaymentStatus {
+///            return .paid
+///        }
+///
 ///        func isComplete() -> Bool {
 ///            switch self {
 ///            case .paid: return true
@@ -12,6 +16,9 @@
 ///        }
 ///     }
 public protocol Completable {
+    
+    /// Gets an instance of `Self` in the completed state.
+    static func completed() -> Self
     
     /// Checks whether the current state is complete or not.
     func isComplete() -> Bool
