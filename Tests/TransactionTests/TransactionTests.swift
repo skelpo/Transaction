@@ -2,15 +2,5 @@ import XCTest
 @testable import Transaction
 
 final class TransactionTests: XCTestCase {
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-        XCTAssertEqual(Transaction().text, "Hello, World!")
-    }
-
-
-    static var allTests = [
-        ("testExample", testExample),
-    ]
+    static var allTests: [(String, (TransactionTests) -> ()throws -> ())] = []
 }
