@@ -27,7 +27,13 @@ public protocol PaymentMethod {
     func workThroughPendingTransactions()
     
     /// Creates a new transaction. This function is used internally.
-    func createTransaction(from purchase: Purchase, userId: Int, amount: Int?, status: Purchase.PaymentStatus?) -> Future<Purchase.Payment>
+    func createTransaction(
+        from purchase: Purchase,
+        userId: Int,
+        amount: Int?,
+        status: Purchase.PaymentStatus?,
+        paymentInit: (Purchase.ID, Int, Int, Purchase.PaymentStatus) -> ()
+    ) -> Future<Purchase.Payment>
     
     /// Pays for a `Purchase` instance.
     func pay(for order: Purchase, userId: Int, amount: Int, params: Codable?) throws -> Future<PaymentResponse<Purchase>>
