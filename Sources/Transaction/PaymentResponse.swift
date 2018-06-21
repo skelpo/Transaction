@@ -17,4 +17,13 @@ public struct PaymentResponse<Purchase>: Content where Purchase: Buyable {
     
     /// The ID of the payment data of the purchased item(s).
     public var transactionID: Purchase.Payment.ID?
+    
+    /// Initialize a new `PaymentResponse` instance.
+    public init(success: Bool = true, message: String = "", redirectUrl: String? = nil, data: String? = nil, transactionID: Purchase.Payment.ID? = nil) {
+        self.success = success
+        self.message = message
+        self.redirectUrl = redirectUrl
+        self.data = data
+        self.transactionID = transactionID
+    }
 }
