@@ -53,7 +53,7 @@ extension PaymentMethod {
     /// Creates a new instance of the service for the supplied `Container`.
     ///
     /// See `ServiceFactory` for more information.
-    static func makeService(for worker: Container) throws -> Self {
+    public static func makeService(for worker: Container) throws -> Self {
         return Self.init(container: worker)
     }
 }
