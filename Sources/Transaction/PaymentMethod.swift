@@ -1,8 +1,8 @@
-import Vapor
+import Service
 
 /// A generic representation of a payment service, such as
 /// PayPal, Stripe, or CoinBase.
-public protocol PaymentMethod {
+public protocol PaymentMethod: ServiceType {
     
     /// The type of object that the payment service will be used to purchase.
     associatedtype Purchase: Buyable
@@ -21,7 +21,7 @@ public protocol PaymentMethod {
     static var slug: String { get }
     
     /// Initializes the payment method with credentials.
-    init(request: Request)
+    init(container: Container)
     
     /// Is called periodically to update pending transactions.
     func workThroughPendingTransactions()
@@ -46,4 +46,14 @@ public protocol PaymentMethod {
     
     ///
     func refund(payment: Purchase.Payment, amount: Int?) -> Future<Purchase.Payment>
+}
+
+extension PaymentMethod {
+
+    /// Creates a new instance of the service for the supplied `Container`.
+    ///
+    /// See `ServiceFactory` for more information.
+    static func makeService(for worker: Container) throws -> Self {
+        return Self.init(container: worker)
+    }
 }
