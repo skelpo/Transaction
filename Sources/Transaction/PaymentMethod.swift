@@ -55,6 +55,15 @@ public protocol PaymentMethod: ServiceType {
     ///
     /// - Returns: A void future that indicates when the operation is complete.
     func execute(payment: Payment, with data: ExecutionData) -> Future<ExecutionResponse>
+    
+    /// Refunds a payment with a given amount. If `amount` is `nil`, then the whole of the payment is refunded.
+    ///
+    /// - Parameters:
+    ///   - payment: The payment to refund.
+    ///   - amount: The amount of the payment to refund.
+    ///
+    /// - Returns: The payment object that was refunded.
+    func refund(payment: Payment, amount: Int?) -> Future<Payment>
 }
 
 extension PaymentMethod {
