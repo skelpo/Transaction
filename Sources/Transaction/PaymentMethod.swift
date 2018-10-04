@@ -12,7 +12,7 @@ public protocol PaymentMethod: ServiceType {
     /// Additional data that gets sent to the payment provider so the payment can succsefully execute.
     ///
     /// If you don't need this type, you can set it to something arbitrary like `Void`.
-    associatedtype ExecutionData
+    associatedtype ExecutionData: Codable
     
     /// The type returned from the `.execute(payment:with:)` method.
     ///
