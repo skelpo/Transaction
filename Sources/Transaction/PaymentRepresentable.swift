@@ -8,5 +8,5 @@ public protocol PaymentRepresentable {
     associatedtype Payment
     
     /// Converts `PaymentRepresentable` to the `Payment` type.
-    func payment(on container: Container) -> Future<Payment>
+    func payment<Method>(on container: Container, with method: Method) -> Future<Payment> where Method: PaymentMethod
 }
