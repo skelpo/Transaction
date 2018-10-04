@@ -20,10 +20,10 @@ public protocol PaymentMethod: ServiceType {
     associatedtype ExecutionResponse
     
     /// The proper name of the payment provider that is connected to, such as `PayPal` or `Stripe`.
-    var name: String { get }
+    static var name: String { get }
     
     /// The case insensetive ID for the payment provider.
-    var slug: String { get }
+    static var slug: String { get }
     
     /// The worker that the transaction runner is connected to.
     var container: Container { get }
