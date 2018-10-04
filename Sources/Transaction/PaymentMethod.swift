@@ -4,7 +4,7 @@ import Service
 public protocol PaymentMethod: ServiceType {
     
     /// The type used by the back-end app to represent an e-commerce purchase.
-    associatedtype Purchase
+    associatedtype Purchase: PaymentRepresentable where Purchase.Payment == Self.Payment
     
     /// The type used by the third-party payment provider to represent a payment.
     associatedtype Payment
