@@ -1,51 +1,70 @@
 import Service
 
+// P = Third-party API
+//
+// - Create P.Payment object
+//
+// PayPal:
+//   - Register payment with PayPal
+//   - Get payment authorization redirect
+//   - Execute payment
+//
+// Stripe:
+//   - Charge the card the user registered from the browser
+
+
 /// A generic representation of a payment service, such as
 /// PayPal, Stripe, or CoinBase.
 public protocol PaymentMethod: ServiceType {
     
-    /// The type of object that the payment service will be used to purchase.
-    associatedtype Purchase: Buyable
+    /// The type used by the back-end app to represent an e-commerce purchase.
+    associatedtype Purchase
     
-    /// Can this payment method take time, like a few minutes or hours until it is finished?
-    static var pendingPossible: Bool { get }
+    /// The type used by the third-party payment provider to represent a payment.
+    associatedtype Payment
     
-    /// Is pre-authentification needed? Like when charging a credit card?
-    /// Note: This may be "chosen" and not obgligated. The final charge may be wanted a little later.
-    static var preauthNeeded: Bool { get }
-    
-    /// The name of this payment method.
-    static var name: String { get }
-    
+    /// Additional data that gets sent to the payment provider so the payment can succsefully execute.
     ///
-    static var slug: String { get }
+    /// If you don't need this type, you can set it to something arbitrary like `String` or `Any`.
+    associatedtype ExecutionData
     
-    /// Initializes the payment method with credentials.
+    
+    /// The proper name of the payment provider that is connected to, such as `PayPal` or `Stripe`.
+    var name: String { get }
+    
+    /// The case insensetive ID for the payment provider.
+    var slug: String { get }
+    
+    /// The worker that the transaction runner is connected to.
+    var container: Container { get }
+    
+    
+    /// Creates a new instance of the type that implements the protocol.
+    ///
+    /// - Note: Instead of calling this initializer, you should register the type with your app's services:
+    ///
+    ///       services.register(Payment.self)
     init(container: Container)
     
-    /// Is called periodically to update pending transactions.
-    func workThroughPendingTransactions()
-    
-    /// Creates a new transaction. This function is used internally.
-    func createTransaction(
-        from purchase: Purchase,
-        userId: Int,
-        amount: Int?,
-        status: Purchase.PaymentStatus?,
-        paymentInit: @escaping (Purchase.ID, String, Int, Int) -> (Purchase.Payment)
-    ) -> Future<Purchase.Payment>
-    
-    /// Pays for a `Purchase` instance.
-    func pay(
-        for order: Purchase,
-        userId: Int,
-        amount: Int,
-        params: Codable?,
-        paymentInit: @escaping (Purchase.ID, String, Int, Int) -> (Purchase.Payment)
-    ) throws -> Future<PaymentResponse<Purchase>>
-    
+    /// Converts the `Purchase` type used by your app to the provider's `Payment` type.
+    /// In some cases, this method should send the payment to the provider to be created (PayPal),
+    /// while in others that has already been done on the client side (Stripe)
     ///
-    func refund(payment: Purchase.Payment, amount: Int?) -> Future<Purchase.Payment>
+    /// You can use this method to save the payment to a database if you want to.
+    ///
+    /// - Parameter purchase: The purchase type object to convert to a provider's payment.
+    ///
+    /// - Returns: The payment object that gets sent to the payment provider.
+    func payment(for purchase: Purchase) -> Future<Payment>
+    
+    /// Activates whatever logic is required to cause the payment to execute that has been created with the payment provider.
+    ///
+    /// - Parameters:
+    ///   - payment: The payment object for the provider to execute, so a merchant gets paid.
+    ///   - data: Additional data that is sent along with the payment to the provider so the payment can execute.
+    ///
+    /// - Returns: A void future that indicates when the operation is complete.
+    func execute(payment: Payment, with data: ExecutionData) -> Future<Void>
 }
 
 extension PaymentMethod {
