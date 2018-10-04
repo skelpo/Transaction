@@ -1,20 +1,6 @@
 import Service
 
-// P = Third-party API
-//
-// - Create P.Payment object
-//
-// PayPal:
-//   - Register payment with PayPal
-//   - Get payment authorization redirect
-//   - Execute payment
-//
-// Stripe:
-//   - Charge the card the user registered from the browser
-
-
-/// A generic representation of a payment service, such as
-/// PayPal, Stripe, or CoinBase.
+/// A generic representation of a third-party payment provider, such as PayPal, Stripe, or CoinBase.
 public protocol PaymentMethod: ServiceType {
     
     /// The type used by the back-end app to represent an e-commerce purchase.
