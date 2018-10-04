@@ -25,9 +25,13 @@ public protocol PaymentMethod: ServiceType {
     
     /// Additional data that gets sent to the payment provider so the payment can succsefully execute.
     ///
-    /// If you don't need this type, you can set it to something arbitrary like `String` or `Any`.
+    /// If you don't need this type, you can set it to something arbitrary like `Void`.
     associatedtype ExecutionData
     
+    /// The type returned from the `.execute(payment:with:)` method.
+    ///
+    /// If you don't have a specific type you want, you can just set this to `Void`.
+    associatedtype ExecutionResponse
     
     /// The proper name of the payment provider that is connected to, such as `PayPal` or `Stripe`.
     var name: String { get }
@@ -64,7 +68,7 @@ public protocol PaymentMethod: ServiceType {
     ///   - data: Additional data that is sent along with the payment to the provider so the payment can execute.
     ///
     /// - Returns: A void future that indicates when the operation is complete.
-    func execute(payment: Payment, with data: ExecutionData) -> Future<Void>
+    func execute(payment: Payment, with data: ExecutionData) -> Future<ExecutionResponse>
 }
 
 extension PaymentMethod {
