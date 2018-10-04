@@ -1,4 +1,5 @@
 import Core
+import Service
 
 /// A type that can be converted to a payment provider's payment model.
 public protocol PaymentRepresentable {
@@ -7,5 +8,5 @@ public protocol PaymentRepresentable {
     associatedtype Payment
     
     /// Converts `PaymentRepresentable` to the `Payment` type.
-    func payment() -> Future<Payment>
+    func payment(on container: Container) -> Future<Payment>
 }
