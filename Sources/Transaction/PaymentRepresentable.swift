@@ -9,4 +9,7 @@ public protocol PaymentRepresentable {
     
     /// Converts `PaymentRepresentable` to the `Payment` type.
     func payment<Method>(on container: Container, with method: Method) -> Future<Payment> where Method: PaymentMethod
+    
+    /// Gets an already created `Payment` instance.
+    func fetchPayment(on container: Container) -> Future<Payment>
 }
