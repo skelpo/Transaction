@@ -24,36 +24,32 @@ public final class PaymentController<Provider>: RouteCollection where
         }
     }
     
-    public func create(_ request: Request)throws -> Future<Response> {
+    public func create(_ request: Request)throws -> Future<Provider.CreatedResponse> {
         let provider = try request.make(Provider.self)
         let purchase = try request.parameters.next(Provider.Purchase.self)
         
-        let response = request.response()
         let payment = purchase.flatMap(provider.payment)
-        
-        return payment.flatMap(provider.created).map(response.content.encode).transform(to: response)
+        return payment.flatMap(provider.created)
     }
     
-    public func execute(_ request: Request, body: Provider.ExecutionData)throws -> Future<Response> {
+    public func execute(_ request: Request, body: Provider.ExecutionData)throws -> Future<Provider.ExecutedResponse> {
         let provider = try request.make(Provider.self)
         let purchase = try request.parameters.next(Provider.Purchase.self)
         
-        let response = request.response()
         let payment = purchase.flatMap { $0.fetchPayment(on: request) }
         let executed = payment.and(result: body).flatMap(provider.execute)
         
-        return executed.flatMap(provider.executed).map(response.content.encode).transform(to: response)
+        return executed.flatMap(provider.executed)
     }
     
-    func run(_ request: Request, body: Provider.ExecutionData)throws -> Future<Response> {
+    func run(_ request: Request, body: Provider.ExecutionData)throws -> Future<Provider.ExecutedResponse> {
         let provider = try request.make(Provider.self)
         let purchase = try request.parameters.next(Provider.Purchase.self)
         
-        let response = request.response()
         let payment = purchase.flatMap(provider.payment)
         let executed = payment.and(result: body).flatMap(provider.execute)
         
-        return executed.flatMap(provider.executed).map(response.content.encode).transform(to: response)
+        return executed.flatMap(provider.executed)
     }
 }
 
