@@ -1,7 +1,9 @@
 import Vapor
 
+
+// MARK: - PaymentController
 public final class PaymentController<Provider>: RouteCollection where
-    Provider: PaymentMethod, Provider.Purchase: Parameter, Provider.Purchase.ResolvedParameter == Future<Provider.Purchase>,
+    Provider: PaymentMethod & PaymentResponse, Provider.Purchase: Parameter, Provider.Purchase.ResolvedParameter == Future<Provider.Purchase>,
     Provider.Payment: Codable, Provider.ExecutionData: Content
 {
     public let structure: RouteStructure
@@ -26,44 +28,32 @@ public final class PaymentController<Provider>: RouteCollection where
         let provider = try request.make(Provider.self)
         let purchase = try request.parameters.next(Provider.Purchase.self)
         
+        let response = request.response()
         let payment = purchase.flatMap(provider.payment)
         
-        if let responder = payment as? Future<CreatedPaymentResponse> {
-            return responder.flatMap { $0.created(request) }
-        } else {
-            let response = request.response()
-            return payment.map(response.content.encode).transform(to: response)
-        }
+        return payment.flatMap(provider.created).map(response.content.encode).transform(to: response)
     }
     
     public func execute(_ request: Request, body: Provider.ExecutionData)throws -> Future<Response> {
         let provider = try request.make(Provider.self)
         let purchase = try request.parameters.next(Provider.Purchase.self)
         
+        let response = request.response()
         let payment = purchase.flatMap { $0.fetchPayment(on: request) }
         let executed = payment.and(result: body).flatMap(provider.execute)
         
-        if let responder = executed as? Future<ExecutedPaymentResponse> {
-            return responder.flatMap { $0.executed(request) }
-        } else {
-            let response = request.response()
-            return executed.map(response.content.encode).transform(to: response)
-        }
+        return executed.flatMap(provider.executed).map(response.content.encode).transform(to: response)
     }
     
     func run(_ request: Request, body: Provider.ExecutionData)throws -> Future<Response> {
         let provider = try request.make(Provider.self)
         let purchase = try request.parameters.next(Provider.Purchase.self)
         
+        let response = request.response()
         let payment = purchase.flatMap(provider.payment)
         let executed = payment.and(result: body).flatMap(provider.execute)
         
-        if let responder = executed as? Future<ExecutedPaymentResponse> {
-            return responder.flatMap { $0.executed(request) }
-        } else {
-            let response = request.response()
-            return executed.map(response.content.encode).transform(to: response)
-        }
+        return executed.flatMap(provider.executed).map(response.content.encode).transform(to: response)
     }
 }
 
@@ -95,6 +85,8 @@ extension ExecutedPaymentResponse where ExecutedResponse == Self.Payment {
     }
 }
 
+
+// MARK: - Enums
 public enum RouteStructure {
     case mixed
     case separate
