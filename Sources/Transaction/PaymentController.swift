@@ -67,12 +67,32 @@ public final class PaymentController<Provider>: RouteCollection where
     }
 }
 
-public protocol CreatedPaymentResponse {
-    func created(_ request: Request) -> Future<Response>
+
+// MARK: - Protocols
+public typealias PaymentResponse = CreatedPaymentResponse & ExecutedPaymentResponse
+
+public protocol CreatedPaymentResponse: PaymentMethod {
+    associatedtype CreatedResponse: Content = Self.Payment
+    
+    func created(from payment: Payment) -> Future<CreatedResponse>
 }
 
-public protocol ExecutedPaymentResponse {
-    func executed(_ request: Request) -> Future<Response>
+public protocol ExecutedPaymentResponse: PaymentMethod {
+    associatedtype ExecutedResponse: Content = Self.Payment
+    
+    func executed(from payment: Payment) -> Future<ExecutedResponse>
+}
+
+extension CreatedPaymentResponse where CreatedResponse == Self.Payment {
+    func created(from payment: Payment) -> Future<CreatedResponse> {
+        return self.container.future(payment)
+    }
+}
+
+extension ExecutedPaymentResponse where ExecutedResponse == Self.Payment {
+    func executed(from payment: Payment) -> Future<ExecutedResponse> {
+        return self.container.future(payment)
+    }
 }
 
 public enum RouteStructure {
