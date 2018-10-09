@@ -14,11 +14,6 @@ public protocol PaymentMethod: ServiceType {
     /// If you don't need this type, you can set it to something arbitrary like `Void`.
     associatedtype ExecutionData: Codable
     
-    /// The type returned from the `.execute(payment:with:)` method.
-    ///
-    /// If you don't have a specific type you want, you can just set this to `Void`.
-    associatedtype ExecutionResponse
-    
     /// The proper name of the payment provider that is connected to, such as `PayPal` or `Stripe`.
     static var name: String { get }
     
@@ -54,7 +49,7 @@ public protocol PaymentMethod: ServiceType {
     ///   - data: Additional data that is sent along with the payment to the provider so the payment can execute.
     ///
     /// - Returns: A void future that indicates when the operation is complete.
-    func execute(payment: Payment, with data: ExecutionData) -> Future<ExecutionResponse>
+    func execute(payment: Payment, with data: ExecutionData) -> Future<Payment>
     
     /// Refunds a payment with a given amount. If `amount` is `nil`, then the whole of the payment is refunded.
     ///
