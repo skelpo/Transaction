@@ -4,16 +4,14 @@ public final class PaymentController<Provider>: RouteCollection where
     Provider: PaymentMethod, Provider.Purchase: Parameter, Provider.Purchase.ResolvedParameter == Future<Provider.Purchase>,
     Provider.Payment: Codable, Provider.ExecutionData: Content
 {
-    public let root: String?
     public let structure: RouteStructure
     
-    public init(root: String? = nil, structure: RouteStructure) {
-        self.root = root
+    public init(structure: RouteStructure) {
         self.structure = structure
     }
     
     public func boot(router: Router) throws {
-        let payments = router.grouped(root ?? "", Provider.slug)
+        let payments = router.grouped(Provider.slug)
         
         switch self.structure {
         case .mixed:
