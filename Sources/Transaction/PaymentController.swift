@@ -62,13 +62,13 @@ public final class PaymentController<Provider>: RouteCollection where
 public typealias PaymentResponse = CreatedPaymentResponse & ExecutedPaymentResponse
 
 public protocol CreatedPaymentResponse: PaymentMethod {
-    associatedtype CreatedResponse: Content = Self.Payment
+    associatedtype CreatedResponse: ResponseCodable = Self.Payment
     
     func created(from payment: Payment) -> Future<CreatedResponse>
 }
 
 public protocol ExecutedPaymentResponse: PaymentMethod {
-    associatedtype ExecutedResponse: Content = Self.Payment
+    associatedtype ExecutedResponse: ResponseCodable = Self.Payment
     
     func executed(from payment: Payment) -> Future<ExecutedResponse>
 }
