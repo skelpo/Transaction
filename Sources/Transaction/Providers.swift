@@ -1,6 +1,8 @@
 import Vapor
 
 public final class TransactionProvider: Provider {
+    public init() {}
+    
     public func register(_ services: inout Services) throws {
         
     }
