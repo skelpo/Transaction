@@ -15,7 +15,7 @@ public final class TransactionProvider: Provider {
         let router = try container.make(Router.self)
         let controllers = try container.make(PaymentControllers.self)
         
-        let payments = router.grouped(controllers.root)
+        let payments = controllers.root == nil ? router : router.grouped(controllers.root!)
         try controllers.controllers.forEach { controller in
             try payments.register(collection: controller)
         }
