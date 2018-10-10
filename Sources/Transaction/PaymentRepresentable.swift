@@ -24,5 +24,5 @@ public protocol PaymentRepresentable {
 public protocol Identifiable: Codable {
     associatedtype ID: Codable
     
-    var id: ID? { get }
+    var id: ID { get }
 }
