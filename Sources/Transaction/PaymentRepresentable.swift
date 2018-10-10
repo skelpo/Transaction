@@ -4,9 +4,6 @@ import Service
 /// A type that can be converted to a payment provider's payment model.
 public protocol PaymentRepresentable {
     
-    ///
-    associatedtype ProviderPayment: Codable
-    
     /// The `Payment` type that `PaymentRepresentable` can be converted to.
     associatedtype Payment
     
