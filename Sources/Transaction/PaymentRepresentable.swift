@@ -11,15 +11,9 @@ public protocol PaymentRepresentable {
     func payment<Method, ID>(
         on container: Container,
         with method: Method,
-        externalID: ID
-    ) -> Future<Payment> where Method: PaymentMethod, ID: Identifiable
+        externalID: ID?
+    ) -> Future<Payment> where Method: PaymentMethod
     
     /// Gets an already created `Payment` instance.
     func fetchPayment(on container: Container) -> Future<Payment>
-}
-
-public protocol Identifiable: Codable {
-    associatedtype ID: Codable
-    
-    var id: ID { get }
 }
