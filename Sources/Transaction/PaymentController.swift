@@ -69,17 +69,29 @@ public final class PaymentController<Provider>: RouteCollection where
 
 
 // MARK: - Protocols
+
+/// A combined protocol of `CreatedPaymentResponse` and `ExecutedPaymentResponse`.
 public typealias PaymentResponse = CreatedPaymentResponse & ExecutedPaymentResponse
 
+/// Allows a `PaymentController` instance to convert a purchase's payment instance
+/// to be converted to a custom response for the `create` route handler.
 public protocol CreatedPaymentResponse: PaymentMethod {
+    
+    /// The type returned from the `create` route handler. This defaults to `Payment`.
     associatedtype CreatedResponse: ResponseCodable = Self.Payment
     
+    /// Converts the payment to a custom type. This defaults to returning the payment passed in.
     func created(from payment: Payment) -> Future<CreatedResponse>
 }
 
+/// Allows a `PaymentController` instance to convert a purchase's payment instance
+/// to be converted to a custom response for the `execute` and `run` route handlers.
 public protocol ExecutedPaymentResponse: PaymentMethod {
+    
+    /// The type returned from the `execute` and `run` route handlers. This defaults to `Payment`.
     associatedtype ExecutedResponse: ResponseCodable = Self.Payment
     
+    /// Converts the payment to a custom type. This defaults to returning the payment passed in.
     func executed(from payment: Payment) -> Future<ExecutedResponse>
 }
 
@@ -97,7 +109,13 @@ extension ExecutedPaymentResponse where ExecutedResponse == Self.Payment {
 
 
 // MARK: - Enums
+
+/// How a `PaymentController` instance's routes should be structured.
 public enum RouteStructure {
+    
+    /// Register the `create` and `execute` operations for a payment in a single `run` route.
     case mixed
+    
+    /// Keep the `create` and `execute` payment operations in separate routes.
     case separate
 }
