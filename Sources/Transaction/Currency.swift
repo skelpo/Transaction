@@ -26,29 +26,29 @@ public protocol CurrencyProtocol: Codable {
 ///
 ///     let currency: CurrencyProtocol = Currency.usd
 ///     let wrapper = CurrencyType(currency)
-struct CurrencyType: Codable {
+public struct CurrencyType: Codable {
     
     /// The base currency instance used to create this `CurrencyType` instance. This is not encoded or decoded.
-    var wrapped: CurrencyProtocol?
+    public var wrapped: CurrencyProtocol?
     
     /// The currency code from the `CurrencyProtocol` instance passed into the initializer.
-    var code: String
+    public var code: String
     
     /// Creates a new `CurrencyType` instance.
     ///
     /// - Parameter currency: The `CurrencyProtocol` instance to get the currency code from.
-    init(_ currency: CurrencyProtocol) {
+    public init(_ currency: CurrencyProtocol) {
         self.wrapped = currency
         self.code = currency.rawValue
     }
     
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         self.code = try container.decode(String.self)
         self.wrapped = nil
     }
     
-    func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(self.code)
     }
