@@ -15,4 +15,8 @@
 ///         // Other cases
 ///     }
 ///
-public protocol CurrencyProtocol: RawRepresentable, Codable where RawValue == String {}
+public protocol CurrencyProtocol: Codable {
+    init?(rawValue: String)
+    
+    var rawValue: String { get }
+}
