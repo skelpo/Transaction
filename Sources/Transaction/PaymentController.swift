@@ -2,16 +2,25 @@ import Vapor
 
 
 // MARK: - PaymentController
+
+/// A controller that handles creating, executing, and refunding payments to a third-party payment provider.
 public final class PaymentController<Provider>: RouteCollection where
     Provider: PaymentMethod & PaymentResponse, Provider.Purchase: Parameter, Provider.Purchase.ResolvedParameter == Future<Provider.Purchase>,
     Provider.Payment: Codable, Provider.ExecutionData: Content
 {
+    
+    /// Whether the payment's creation and execution should be in two separate routes or be combined into a single route.
     public let structure: RouteStructure
     
+    
+    /// Creates a new `PaymentController` instance.
+    ///
+    /// - Parameter structure: Whether the payment's creation and execution should be in two separate routes or be combined into a single route.
     public init(structure: RouteStructure) {
         self.structure = structure
     }
     
+    /// See `RouteCollection.boot(router:)`.
     public func boot(router: Router) throws {
         let payments = router.grouped(Provider.slug)
         
@@ -24,6 +33,8 @@ public final class PaymentController<Provider>: RouteCollection where
         }
     }
     
+    
+    /// Creates a new payment for the controller's prokvider.
     public func create(_ request: Request)throws -> Future<Provider.CreatedResponse> {
         let provider = try request.make(Provider.self)
         let purchase = try request.parameters.next(Provider.Purchase.self)
@@ -32,6 +43,7 @@ public final class PaymentController<Provider>: RouteCollection where
         return payment.flatMap(provider.created)
     }
     
+    /// Executes a previously created payment for the controller's payment provider.
     public func execute(_ request: Request, body: Provider.ExecutionData)throws -> Future<Provider.ExecutedResponse> {
         let provider = try request.make(Provider.self)
         let purchase = try request.parameters.next(Provider.Purchase.self)
@@ -42,6 +54,8 @@ public final class PaymentController<Provider>: RouteCollection where
         return executed.flatMap(provider.executed)
     }
     
+    /// Both creates and executed a payment in a single action. This should be used if the payment was created
+    /// from the client instead of your server.
     func run(_ request: Request, body: Provider.ExecutionData)throws -> Future<Provider.ExecutedResponse> {
         let provider = try request.make(Provider.self)
         let purchase = try request.parameters.next(Provider.Purchase.self)
