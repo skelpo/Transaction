@@ -15,41 +15,9 @@
 ///         // Other cases
 ///     }
 ///
+/// - Note: This type does _not_ conform to `RawRepresentable` to remove `Self` type constraints.
 public protocol CurrencyProtocol: Codable {
     init?(rawValue: String)
     
     var rawValue: String { get }
-}
-
-
-/// A codable type to wrapping a type-erased`CurrencyProtocol` instance.
-///
-///     let currency: CurrencyProtocol = Currency.usd
-///     let wrapper = CurrencyType(currency)
-public struct CurrencyType: Codable {
-    
-    /// The base currency instance used to create this `CurrencyType` instance. This is not encoded or decoded.
-    public var wrapped: CurrencyProtocol?
-    
-    /// The currency code from the `CurrencyProtocol` instance passed into the initializer.
-    public var code: String
-    
-    /// Creates a new `CurrencyType` instance.
-    ///
-    /// - Parameter currency: The `CurrencyProtocol` instance to get the currency code from.
-    public init(_ currency: CurrencyProtocol) {
-        self.wrapped = currency
-        self.code = currency.rawValue
-    }
-    
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        self.code = try container.decode(String.self)
-        self.wrapped = nil
-    }
-    
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(self.code)
-    }
 }
