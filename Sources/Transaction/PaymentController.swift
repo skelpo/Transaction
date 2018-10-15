@@ -22,7 +22,7 @@ public final class PaymentController<Provider>: RouteCollection where
     
     /// See `RouteCollection.boot(router:)`.
     public func boot(router: Router) throws {
-        let payments = router.grouped(Provider.slug)
+        let payments = router.grouped(Provider.Purchase.parameter, "payment", Provider.slug)
         
         switch self.structure {
         case .mixed:
