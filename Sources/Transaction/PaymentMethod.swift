@@ -40,7 +40,7 @@ public protocol PaymentMethod: ServiceType {
     /// - Parameter purchase: The purchase type object to convert to a provider's payment.
     ///
     /// - Returns: The payment object that gets sent to the payment provider.
-    func payment(for purchase: Purchase) -> Future<Payment>
+    func payment(for purchase: Purchase, with content: Purchase.PaymentContent) -> Future<Payment>
     
     /// Activates whatever logic is required to cause the payment to execute that has been created with the payment provider.
     ///

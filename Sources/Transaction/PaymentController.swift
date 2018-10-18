@@ -38,8 +38,9 @@ public final class PaymentController<Provider>: RouteCollection where
     public func create(_ request: Request)throws -> Future<Provider.CreatedResponse> {
         let provider = try request.make(Provider.self)
         let purchase = try request.parameters.next(Provider.Purchase.self)
+        let content = try request.content.decode(Provider.Purchase.PaymentContent.self)
         
-        let payment = purchase.flatMap(provider.payment)
+        let payment = purchase.and(content).flatMap(provider.payment)
         return payment.flatMap(provider.created)
     }
     
@@ -59,8 +60,9 @@ public final class PaymentController<Provider>: RouteCollection where
     func run(_ request: Request, body: Provider.ExecutionData)throws -> Future<Provider.ExecutedResponse> {
         let provider = try request.make(Provider.self)
         let purchase = try request.parameters.next(Provider.Purchase.self)
+        let content = try request.content.decode(Provider.Purchase.PaymentContent.self)
         
-        let payment = purchase.flatMap(provider.payment)
+        let payment = purchase.and(content).flatMap(provider.payment)
         let executed = payment.and(result: body).flatMap(provider.execute)
         
         return executed.flatMap(provider.executed)
