@@ -57,7 +57,7 @@ public final class PaymentController<Provider>: RouteCollection where
     
     /// Both creates and executed a payment in a single action. This should be used if the payment was created
     /// from the client instead of your server.
-    func run(_ request: Request, body: Provider.ExecutionData)throws -> Future<Provider.ExecutedResponse> {
+    public func run(_ request: Request, body: Provider.ExecutionData)throws -> Future<Provider.ExecutedResponse> {
         let provider = try request.make(Provider.self)
         let purchase = try request.parameters.next(Provider.Purchase.self)
         let content = try request.content.decode(Provider.Purchase.PaymentContent.self)
